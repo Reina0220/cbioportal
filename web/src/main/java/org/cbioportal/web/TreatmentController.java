@@ -36,7 +36,7 @@ public class TreatmentController {
     private StudyViewFilterApplier studyViewFilterApplier;
 
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
-    @RequestMapping(value = "/treatments/{studyId}/patient", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/treatments/patient", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all cancer types")
     public ResponseEntity<List<PatientTreatmentRow>> getAllPatientTreatments(
         @ApiParam(required = true, value = "Study view filter")
@@ -68,7 +68,7 @@ public class TreatmentController {
 
 
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
-    @RequestMapping(value = "/treatments/{studyId}/sample", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/treatments/sample", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all sample level treatments")
     public ResponseEntity<List<SampleTreatmentRow>> getAllSampleTreatments(
         @ApiParam(required = true, value = "Study view filter")
@@ -85,7 +85,7 @@ public class TreatmentController {
         @RequestAttribute(required = false, value = "interceptedStudyViewFilter")
         StudyViewFilter interceptedStudyViewFilter
     ) {
-        List<SampleIdentifier> sampleIdentifiers = studyViewFilterApplier.apply(studyViewFilter);
+        List<SampleIdentifier> sampleIdentifiers = studyViewFilterApplier.apply(interceptedStudyViewFilter);
         List<String> sampleIds = sampleIdentifiers.stream()
             .map(SampleIdentifier::getSampleId)
             .distinct()
