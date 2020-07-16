@@ -2,7 +2,6 @@ package org.cbioportal.service.impl;
 
 import org.cbioportal.model.*;
 import org.cbioportal.persistence.TreatmentRepository;
-import org.cbioportal.service.SampleService;
 import org.cbioportal.service.TreatmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class TreatmentServiceImpl implements TreatmentService {
     
     @Override
     public List<SampleTreatmentRow> getAllSampleTreatmentRows(List<String> sampleIds, List<String> studyIds) {
-        Map<String, List<DatedSample>> samplesByPatient = treatmentRepository.getSamplesByPatient(sampleIds, studyIds);
+        Map<String, List<ClinicalEventSample>> samplesByPatient = treatmentRepository.getSamplesByPatient(sampleIds, studyIds);
         Map<String, List<Treatment>> treatmentsByPatient = treatmentRepository.getTreatmentsByPatient(sampleIds, studyIds);
 
         Stream<SampleTreatmentRow> rows = samplesByPatient.keySet().stream()
@@ -31,11 +30,11 @@ public class TreatmentServiceImpl implements TreatmentService {
     
     private Stream<SampleTreatmentRow> getSampleTreatmentRowsForPatient(
             String patientId,
-            Map<String, List<DatedSample>> samplesByPatient,
+            Map<String, List<ClinicalEventSample>> samplesByPatient,
             Map<String, List<Treatment>> treatmentsByPatient
     ) {
         List<Treatment> treatments = treatmentsByPatient.getOrDefault(patientId, new ArrayList<>());
-        List<DatedSample> samples = samplesByPatient.get(patientId);
+        List<ClinicalEventSample> samples = samplesByPatient.get(patientId);
 
         Map<String, TreatmentRowTriplet> rows = new HashMap<>();
 
@@ -83,11 +82,11 @@ public class TreatmentServiceImpl implements TreatmentService {
      * treatments. Each call will move samples taken 
      */
     private static class TreatmentRowTriplet {
-        private final List<DatedSample> pre, post, unknown;
+        private final List<ClinicalEventSample> pre, post, unknown;
         private final String treatment;
         private final Set<String> studyIds;
 
-        TreatmentRowTriplet(List<DatedSample> samples, String treatment) {
+        TreatmentRowTriplet(List<ClinicalEventSample> samples, String treatment) {
             this.treatment = treatment;
             post = new ArrayList<>();
             pre = samples.stream()
@@ -97,7 +96,7 @@ public class TreatmentServiceImpl implements TreatmentService {
                 .filter(s -> s.getTimeTaken() == null)
                 .collect(toList());
             studyIds = samples.stream()
-                .map(DatedSample::getStudyId)
+                .map(ClinicalEventSample::getStudyId)
                 .collect(Collectors.toSet());
         }
 
@@ -109,13 +108,13 @@ public class TreatmentServiceImpl implements TreatmentService {
          *                  the treatment matches the treatment stored in this triplet
          */
         void moveSamplesToPost(Treatment treatment) {
-            for (Iterator<DatedSample> iterator = pre.iterator(); iterator.hasNext(); ) {
-                DatedSample datedSample = iterator.next();
+            for (Iterator<ClinicalEventSample> iterator = pre.iterator(); iterator.hasNext(); ) {
+                ClinicalEventSample clinicalEventSample = iterator.next();
                 // edge case: is a sample taken the same day a treatment starts pre or post?
                 // We're saying pre here
-                if (datedSample.getTimeTaken() > treatment.getStart()) {
+                if (clinicalEventSample.getTimeTaken() > treatment.getStart()) {
                     iterator.remove();
-                    post.add(datedSample);
+                    post.add(clinicalEventSample);
                 }
             }
         }
@@ -128,9 +127,9 @@ public class TreatmentServiceImpl implements TreatmentService {
             );
         }
         
-        private Set<String> toStrings(List<DatedSample> samples) {
+        private Set<String> toStrings(List<ClinicalEventSample> samples) {
             return samples.stream()
-                    .map(DatedSample::getSampleId)
+                    .map(ClinicalEventSample::getSampleId)
                     .collect(Collectors.toSet());
         }
     }
@@ -138,7 +137,7 @@ public class TreatmentServiceImpl implements TreatmentService {
     @Override
     public List<PatientTreatmentRow> getAllPatientTreatmentRows(List<String> sampleIds, List<String> studyIds) {
         Map<String, List<Treatment>> treatmentsByPatient = treatmentRepository.getTreatmentsByPatient(sampleIds, studyIds);
-        Map<String, List<DatedSample>> samplesByPatient = treatmentRepository.getSamplesByPatient(sampleIds, studyIds);
+        Map<String, List<ClinicalEventSample>> samplesByPatient = treatmentRepository.getSamplesByPatient(sampleIds, studyIds);
         Set<String> treatments = treatmentRepository.getAllUniqueTreatments(sampleIds, studyIds);
 
         return treatments.stream()
@@ -149,7 +148,7 @@ public class TreatmentServiceImpl implements TreatmentService {
     private PatientTreatmentRow createPatientTreatmentRowForTreatment(
         String treatment,
         Map<String, List<Treatment>> treatmentsByPatient,
-        Map<String, List<DatedSample>> samplesByPatient
+        Map<String, List<ClinicalEventSample>> samplesByPatient
     ) {
         // find all the patients that have received this treatments
         List<Map.Entry<String, List<Treatment>>> matchingPatients = matchingPatients(treatment, treatmentsByPatient);
@@ -165,7 +164,7 @@ public class TreatmentServiceImpl implements TreatmentService {
             .stream()
             .map(Map.Entry::getKey)
             .flatMap(patient -> samplesByPatient.getOrDefault(patient, new ArrayList<>()).stream())
-            .map(DatedSample::getSampleId)
+            .map(ClinicalEventSample::getSampleId)
             .collect(Collectors.toSet());
 
 

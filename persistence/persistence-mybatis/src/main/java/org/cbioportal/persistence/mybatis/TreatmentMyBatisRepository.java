@@ -1,6 +1,6 @@
 package org.cbioportal.persistence.mybatis;
 
-import org.cbioportal.model.DatedSample;
+import org.cbioportal.model.ClinicalEventSample;
 import org.cbioportal.model.Treatment;
 import org.cbioportal.persistence.TreatmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,11 @@ public class TreatmentMyBatisRepository implements TreatmentRepository {
     }
 
     @Override
-    public Map<String, List<DatedSample>> getSamplesByPatient(List<String> sampleIds, List<String> studyIds) {
+    public Map<String, List<ClinicalEventSample>> getSamplesByPatient(List<String> sampleIds, List<String> studyIds) {
         return treatmentMapper.getAllSamples(sampleIds, studyIds)
             .stream()
-            .collect(groupingBy(DatedSample::getPatientId));
+            .distinct()
+            .collect(groupingBy(ClinicalEventSample::getPatientId));
     }
 
     @Override

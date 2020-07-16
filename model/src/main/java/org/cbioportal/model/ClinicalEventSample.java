@@ -1,6 +1,8 @@
 package org.cbioportal.model;
 
-public class DatedSample {
+import java.util.Objects;
+
+public class ClinicalEventSample {
     private String patientId;
     private String sampleId;
     private String studyId;
@@ -36,5 +38,21 @@ public class DatedSample {
 
     public void setStudyId(String studyId) {
         this.studyId = studyId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClinicalEventSample that = (ClinicalEventSample) o;
+        return getPatientId().equals(that.getPatientId()) &&
+            getSampleId().equals(that.getSampleId()) &&
+            getStudyId().equals(that.getStudyId()) &&
+            getTimeTaken().equals(that.getTimeTaken());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPatientId(), getSampleId(), getStudyId(), getTimeTaken());
     }
 }

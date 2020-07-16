@@ -253,9 +253,9 @@ public class TreatmentServiceImplTest {
             .thenReturn(treatmentsByPatient);
     }
     
-    private void mockSamplesByPatient(DatedSample... samples) {
-        Map<String, List<DatedSample>> samplesByPatient = Arrays.stream(samples)
-            .collect(Collectors.groupingBy(DatedSample::getPatientId));
+    private void mockSamplesByPatient(ClinicalEventSample... samples) {
+        Map<String, List<ClinicalEventSample>> samplesByPatient = Arrays.stream(samples)
+            .collect(Collectors.groupingBy(ClinicalEventSample::getPatientId));
         Mockito.when(treatmentRepository.getSamplesByPatient(Matchers.any(), Matchers.any()))
             .thenReturn(samplesByPatient);
     }
@@ -276,8 +276,8 @@ public class TreatmentServiceImplTest {
         return t;
     }
     
-    private DatedSample makeSample(String sampleId, String patientId, Integer timeTaken) {
-        DatedSample s = new DatedSample();
+    private ClinicalEventSample makeSample(String sampleId, String patientId, Integer timeTaken) {
+        ClinicalEventSample s = new ClinicalEventSample();
         s.setSampleId(sampleId);
         s.setPatientId(patientId);
         s.setStudyId(STUDY_ID);

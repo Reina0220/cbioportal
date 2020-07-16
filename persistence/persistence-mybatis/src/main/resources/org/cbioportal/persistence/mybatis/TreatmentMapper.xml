@@ -19,7 +19,7 @@
             AND clinical_event_data.KEY = "AGENT"
     </select>
 
-    <select id="getAllSamples" resultType="org.cbioportal.model.DatedSample">
+    <select id="getAllSamples" resultType="org.cbioportal.model.ClinicalEventSample">
         SELECT
             clinical_event_data.VALUE as sampleId,
             clinical_event.PATIENT_ID as patientId,
