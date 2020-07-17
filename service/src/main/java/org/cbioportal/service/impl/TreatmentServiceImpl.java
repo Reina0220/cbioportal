@@ -82,19 +82,19 @@ public class TreatmentServiceImpl implements TreatmentService {
      * treatments. Each call will move samples taken 
      */
     private static class TreatmentRowTriplet {
-        private final List<ClinicalEventSample> pre, post, unknown;
+        private final Set<ClinicalEventSample> pre, post, unknown;
         private final String treatment;
         private final Set<String> studyIds;
 
         TreatmentRowTriplet(List<ClinicalEventSample> samples, String treatment) {
             this.treatment = treatment;
-            post = new ArrayList<>();
+            post = new HashSet<>();
             pre = samples.stream()
                 .filter(s -> s.getTimeTaken() != null)
-                .collect(toList());
+                .collect(Collectors.toSet());
             unknown = samples.stream()
                 .filter(s -> s.getTimeTaken() == null)
-                .collect(toList());
+                .collect(Collectors.toSet());
             studyIds = samples.stream()
                 .map(ClinicalEventSample::getStudyId)
                 .collect(Collectors.toSet());
@@ -127,7 +127,7 @@ public class TreatmentServiceImpl implements TreatmentService {
             );
         }
         
-        private Set<String> toStrings(List<ClinicalEventSample> samples) {
+        private Set<String> toStrings(Set<ClinicalEventSample> samples) {
             return samples.stream()
                     .map(ClinicalEventSample::getSampleId)
                     .collect(Collectors.toSet());

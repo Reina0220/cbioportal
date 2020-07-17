@@ -65,9 +65,9 @@ public class SampleTreatmentRow {
     }
     
     public void add(SampleTreatmentRow toAdd) {
-        setCount(getCount() + toAdd.getCount());
         getSamples().addAll(toAdd.getSamples());
         getStudies().addAll(toAdd.getStudies());
+        setCount(getSamples().size());
     }
 
     @Override
