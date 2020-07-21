@@ -60,7 +60,8 @@ public class SampleTreatmentRow {
         this.studies = studies;
     }
     
-    public String calculateKey() {
+    @Override
+    public String toString() {
         return getTreatment() + getTime().name();
     }
     

@@ -268,7 +268,7 @@ public class StudyViewFilterApplier {
 
         Map<String, PatientTreatmentRow> rows = treatmentService.getAllPatientTreatmentRows(sampleIds, studyIds)
             .stream()
-            .collect(Collectors.toMap(PatientTreatmentRow::toString, Function.identity()));
+            .collect(Collectors.toMap(PatientTreatmentRow::getTreatment, Function.identity()));
         
         return identifiers.stream()
             .filter(i -> filters.filter(i, rows))
@@ -284,7 +284,7 @@ public class StudyViewFilterApplier {
         
         Map<String, SampleTreatmentRow> rows = treatmentService.getAllSampleTreatmentRows(sampleIds, studyIds)
             .stream()
-            .collect(Collectors.toMap(SampleTreatmentRow::calculateKey, Function.identity()));
+            .collect(Collectors.toMap(SampleTreatmentRow::toString, Function.identity()));
         
         return identifiers.stream()
             .filter(id -> filters.filter(id, rows))

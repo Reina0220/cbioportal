@@ -58,7 +58,7 @@ public class TreatmentServiceImpl implements TreatmentService {
         Map<String, SampleTreatmentRow> uniqueRows = new HashMap<>();
         rows.forEach(rowToAdd -> {
             if (uniqueRows.containsKey(rowToAdd.getTreatment() + rowToAdd.getTime().name())) {
-                uniqueRows.get(rowToAdd.calculateKey()).add(rowToAdd);
+                uniqueRows.get(rowToAdd.toString()).add(rowToAdd);
             } else {
                 uniqueRows.put(rowToAdd.getTreatment() + rowToAdd.getTime().name(), rowToAdd);
             }
